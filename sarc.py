@@ -1,4 +1,4 @@
-import os, zlib
+import os, argparse
 from struct import pack, unpack, calcsize
 
 DEFAULT_HASH_KEY = 0x65
@@ -312,10 +312,16 @@ def write_file(path, data):
 
 #Helper methods
 def create_archive(path, archive, order, hash_key, verbose):
+    if (not path) or (not os.path.exists(path)):
+        print 'Directory dose not exists. Create archive failed.'
+        return False
     sarc = Sarc(path = path, order = order, hash_key = hash_key)
     sarc.archive(archive_path = archive, verbose = verbose)
 
 def extract_archive(path, archive, verbose):
+    if (not path):
+        print "Output directory hasn't set. Extract archive failed."
+        return False
     sarc = Sarc(path = archive)
     sarc.extract(path = path, all = True, verbose = verbose)
 
@@ -324,4 +330,49 @@ def list_archive(archive):
     sarc.extract(path = '', all = True, save_file = False)
 
 if '__main__' == __name__:
-    extract_archive('./Horse_', './Horse_.sarc', True)
+    endianess = {'big':'>', 'little':'<'}
+    parser = argparse.ArgumentParser(description = 'Nintendo Ware Layout SHArchive Tool')
+    parser.add_argument('-v', '--verbose', help = 'Enable verbose output', action = 'store_true', default = False)
+    group = parser.add_mutually_exclusive_group(required = True)
+    group.add_argument('-x', '--extract', help = 'Extract the archive', action = 'store_true', default = False)
+    group.add_argument('-c', '--create', help = 'Create an archive', action = 'store_true',default = False)
+    group.add_argument('-l', '--list', help = 'List contents in the archive', action = 'store_true', default = False)
+    parser.add_argument('-e', '--endianess', help = 'Set archive endianess', choices = ['big', 'little'], type = str, default = 'little')
+    parser.add_argument('-k', '--hashkey', help = 'Set hash key', default = DEFAULT_HASH_KEY)
+    parser.add_argument('-d', '--dir', help = 'Set working directory')
+    parser.add_argument('-f', '--archive', help = 'Set archive file', required = True)
+    args = parser.parse_args()
+    
+    if (args.create):
+        create_archive(args.dir, args.archive, endianess[args.endianess], args.hashkey, args.verbose)
+    if (args.extract):
+        extract_archive(args.dir, args.archive, args.verbose)
+    if (args.list):
+        list_archive(args.archive)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
