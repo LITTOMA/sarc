@@ -350,29 +350,3 @@ if '__main__' == __name__:
     if (args.list):
         list_archive(args.archive)
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
