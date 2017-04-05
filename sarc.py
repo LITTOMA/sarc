@@ -37,7 +37,7 @@ class Sarc(object):
     Attributes:
         header: Archive file header
         fatheader: FAT block header
-        entrise: File entries
+        entries: File entries
         fnt_data: Binary File Name Table (FNT) data
         archive_data: Archive file data
     """
@@ -140,9 +140,12 @@ class Sarc(object):
                                             cur_fnt_offset,
                                             cur_data_offset)
             packed_fat_entries.append(e.pack())
+            self.fatheader.file_count += 1
             if verbose:
                 print 'Archived:', e.r_path
-        self.fatheader.file_count = len(packed_fat_entries)
+        
+        if self.fatheader.file_count > Sarc.FATBlockHeader._C_ARCHIVE_ENTRY_MAX:
+            print 'WARNING: File entries exceed.'
         
         archived_data = ''.join([self.header.pack(), self.fatheader.pack()])
         archived_data += ''.join(packed_fat_entries)
