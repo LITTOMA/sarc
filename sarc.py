@@ -117,12 +117,12 @@ class Sarc(object):
     
     
     def archive(self, archive_path, verbose=False):
-        """Archive the Sarc class instance to binary file.
-
+        """Archive the Sarc class instance to a binary file.
+        
         Args:
             archive_path: Path to output.
-            verbose: Print verbose infomations.
-
+            verbose: Print verbose information.
+        
         Returns:
             None
         """
@@ -172,13 +172,16 @@ class Sarc(object):
             name: File name to extract.
             hash: Hash of the file to extract. If 'name' argument is set, this argument will be ignored.
             save_file: Save the file to file system. False for listing file(s).
-            verbose: Print verbose infomations.
+            verbose: Print verbose infomation.
 
         Returns:
             None
+        
+        Raises:
+            KeyError: When input file name or hash doesn't exist.
         """
         if all:
-            for k in self.entries:
+            for k in sorted(self.entries):
                 self.extract(path,
                              all=False,
                              name=None,
@@ -195,7 +198,7 @@ class Sarc(object):
                 if save_file and full_path and verbose:
                     print 'Saved:', full_path
                 elif not save_file and r_path:
-                    print r_path
+                    print 'Hash: %08X  Path: %s'%(hash, r_path)
 
     
     class BlockHeader(object):
@@ -548,10 +551,10 @@ def calchash(data, key):
 
 
 def get_string(data):
-    """Get string endind with '\0'.
+    """Get string ending with '\0'.
     
     Args:
-        data: Data contaning string.
+        data: Data containing string.
     
     Returns:
         String without '\0'.
@@ -607,7 +610,7 @@ def create_archive(path, archive, order, hash_key, verbose):
         Boolean
     """
     if (not path) or (not os.path.exists(path)):
-        print 'Directory dose not exists. Create archive failed.'
+        print 'Directory does not exist. Create archive failed.'
         return False
     sarc = Sarc(path=path, order=order, hash_key=hash_key)
     sarc.archive(archive_path=archive, verbose=verbose)
