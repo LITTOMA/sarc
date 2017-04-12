@@ -1,6 +1,6 @@
 # Nintendo Ware Layout SHArchive Tool
-### Usage:
-#### Using as a script:
+## Usage:
+### Using as a script:
 ```
 sarc.py [-h] [-v] (-x | -c | -l) [-e {big,little}] [-k HASHKEY]
         [-d DIR] -f ARCHIVE
@@ -21,7 +21,7 @@ optional arguments:
   -f ARCHIVE, --archive ARCHIVE
                         Set archive file
 ```
-#### Import as a module:
+### Import as a module:
 ```Python
 from sarc import *
 ```
