@@ -24,36 +24,28 @@ optional arguments:
 ### Import as a module:
 ```Python
 from sarc import *
-```
-Initialize an archive with a file:
-```Python
+
+#Initialize an archive with a file:
 arc = Sarc('Path/To/Archive')
-```
-Initialize an archive with a directory:
-```Python
+
+#Initialize an archive with a directory:
 arc = Sarc(path='Path/To/Directory/', order='<', hash_key=0x65)
-```
-Add a file to the archive:
-```Python
+
+#Add a file to the archive:
 arc.add_file_entry('Path/to/File')
-```
-Save the archive:
-```Python
+
+#Save the archive:
 arc.archive(archive_path='Path/To/Archive')
-```
-Extract the archive file entries:
-```Python
+
+#Extract the archive file entries:
 arc.extract(path='Path/To/Output/', all=True)
-```
-Extract a single file from the archive by name:
-```Python
+
+#Extract a single file from the archive by name:
 arc.extract(path='Path/To/Output/', name='Name/Of/File')
-```
-Extract a single file from the archive by hash:
-```Python
+
+#Extract a single file from the archive by hash:
 arc.extract(path='Path/To/Output/', hash=0x12345678)
-```
-List out all file entries (Hash and Name):
-```Python
+
+#List out all file entries (Hash and Name):
 arc.extract(path='', all=True, save_file=False)
 ```
