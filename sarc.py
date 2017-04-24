@@ -318,7 +318,7 @@ class Sarc(object):
             order: Byte order.
             C_SIGNATURE: Constant signature value.
             C_STRUCTURE_SIZE: Constant structure size.
-            HEADER_STRUCT: Structure of the binary archive's header.
+            HEADER_STRUCT: Structure of the binary archive's FAT header.
         """
         HEADER_STRUCT = '4sHHI'
         C_STRUCTURE_SIZE = calcsize(HEADER_STRUCT)
@@ -432,7 +432,7 @@ class Sarc(object):
         
         def archive(self, fnt_list, data_list, cur_fnt_offset, cur_data_offset):
             if self.type == self.ARCHIVED:
-                return True
+                return cur_fnt_offset, cur_data_offset
             elif self.type == self.FILESYSTEM:
                 file_data = open(self.path, 'rb').read()
                 feed = self._align_data(file_data, cur_data_offset)
