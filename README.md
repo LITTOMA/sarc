@@ -12,7 +12,7 @@ optional arguments:
   -v, --verbose         Enable verbose output
   -x, --extract         Extract the archive
   -c, --create          Create an archive
-  -l, --list            List contents in the archive
+  -l, --list            List contents of the archive
   -e {big,little}, --endianess {big,little}
                         Set archive endianess
   -k HASHKEY, --hashkey HASHKEY
