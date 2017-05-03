@@ -653,7 +653,7 @@ if '__main__' == __name__:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-x', '--extract', help='Extract the archive', action='store_true', default=False)
     group.add_argument('-c', '--create', help='Create an archive', action='store_true',default=False)
-    group.add_argument('-l', '--list', help='List contents in the archive', action='store_true', default=False)
+    group.add_argument('-l', '--list', help='List contents of the archive', action='store_true', default=False)
     parser.add_argument('-e', '--endianess', help='Set archive endianess', choices=['big', 'little'], type=str, default='little')
     parser.add_argument('-k', '--hashkey', help='Set hash key', default=DEFAULT_HASH_KEY)
     parser.add_argument('-d', '--dir', help='Set working directory')
