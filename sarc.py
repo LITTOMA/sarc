@@ -24,7 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 
-import os, argparse
+import os, argparse, fnmatch
 from struct import pack, unpack, calcsize
 
 DEFAULT_HASH_KEY = 0x65
@@ -43,7 +43,7 @@ class Sarc(object):
     """
 
 
-    def __init__(self, path='', order='', hash_key=DEFAULT_HASH_KEY):
+    def __init__(self, path='', order='', hash_key=DEFAULT_HASH_KEY, exclude=[]):
         """Initialize Sarc class.
 
         Args:
@@ -55,6 +55,7 @@ class Sarc(object):
         Returns:
             None
         """
+        self.exclude = exclude
         if os.path.isfile(path):
             (self.header, self.fatheader, self.entries, 
              self.fnt_data, self.archive_data) = self._read_archive(path)
@@ -105,6 +106,9 @@ class Sarc(object):
         Returns:
             None
         """
+        for pat in self.exclude:
+            if fnmatch.fnmatch(path, pat):
+                return False
         entry = Sarc.FATEntry(order=self.header.order,
                               base_path=self._base_path,
                               file_path=path,
@@ -113,6 +117,7 @@ class Sarc(object):
             self.entries[entry.hash] = entry
         else:
             self.entries = {entry.hash:entry}
+        return True
     _add_file_entry = add_file_entry
     
     
@@ -151,6 +156,7 @@ class Sarc(object):
         archived_data += ''.join(packed_fat_entries)
         archived_data += Sarc.FNTBlockHeader(order=self.header.order).pack()
         archived_data += self.fnt_data + ''.join(fnt_list)
+        archived_data += (align(len(archived_data), 0x100) - len(archived_data)) * '\x00' #Dumn
         self.header.data_block_offset = len(archived_data)
         
         archived_data += self.archive_data + ''.join(data_list)
@@ -425,6 +431,10 @@ class Sarc(object):
             return ((data[-0x28:-0x24] == 'FLIM') and
                     (len(data) == unpack(self.order + 'I', data[-0x1C:-0x18])[0]))
         
+
+        def _is_bflan(self, data):
+            return data[:4] == 'FLAN'
+        
         
         def _read_bflim_alignment(self, data):
             return unpack(self.order + 'H', data[-8:-6])[0]
@@ -596,7 +606,7 @@ def write_file(path, data):
 
 
 #Helper methods
-def create_archive(path, archive, order, hash_key, verbose):
+def create_archive(path, archive, order, hash_key, verbose, exclude):
     """Create an archive from the input directory.
     
     Args:
@@ -612,7 +622,7 @@ def create_archive(path, archive, order, hash_key, verbose):
     if (not path) or (not os.path.exists(path)):
         print 'Directory does not exist. Create archive failed.'
         return False
-    sarc = Sarc(path=path, order=order, hash_key=hash_key)
+    sarc = Sarc(path=path, order=order, hash_key=hash_key, exclude=exclude)
     sarc.archive(archive_path=archive, verbose=verbose)
 
 
@@ -658,10 +668,11 @@ if '__main__' == __name__:
     parser.add_argument('-k', '--hashkey', help='Set hash key', default=DEFAULT_HASH_KEY)
     parser.add_argument('-d', '--dir', help='Set working directory')
     parser.add_argument('-f', '--archive', help='Set archive file', required=True)
+    parser.add_argument('-n', '--exclude', help='Set exclude files', nargs='*', type=str)
     args = parser.parse_args()
     
     if args.create:
-        create_archive(args.dir, args.archive, endianess[args.endianess], args.hashkey, args.verbose)
+        create_archive(args.dir, args.archive, endianess[args.endianess], args.hashkey, args.verbose, args.exclude)
     if args.extract:
         extract_archive(args.dir, args.archive, args.verbose)
     if args.list:
